@@ -1,0 +1,68 @@
+【使い方】
+この内容を、①〜⑤ 5つのapp.jsそれぞれの、一番最初（LIFF初期化やその他の処理より前）に
+そのままコピー＆ペーストしてください。中身は5サイトとも完全に同一で構いません
+（このスクリプト自身がchainデータの中から「自分宛てのデータ」を判別して処理するため、
+サイトごとに書き換える箇所はありません）。
+
+挿入位置の目安：
+  <script src="...app.js"></script> の中身の一番先頭
+  （"(async () => {" などのメイン処理より前。無ければファイル最上部でOK）
+
+--------------------------------------------------------------------
+/* ============================================================
+   複数アプリ一括下書き移行チェーン 受け取り処理
+   （婚活すり合わせシリーズ 5サイト共通スニペット）
+   ============================================================ */
+(function () {
+  const params = new URLSearchParams(location.search);
+  if (params.get("migrate") !== "1" || !location.hash) return;
+
+  window.__migrationInProgress = true; // 通常のアプリ初期化を止めたい場合の目印
+
+  try {
+    const idx = parseInt(params.get("idx") || "0", 10);
+    const encoded = location.hash.slice(1);
+    const binary = atob(encoded.replace(/-/g, "+").replace(/_/g, "/"));
+    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+    const chain = JSON.parse(new TextDecoder().decode(bytes));
+
+    const item = chain[idx];
+    if (item && item.value != null) {
+      localStorage.setItem(item.draftKey, item.value);
+    }
+
+    const next = chain[idx + 1];
+    if (next) {
+      // まだ移行先が残っている → 次のサイトへ自動遷移
+      location.href = `${next.targetOrigin}?migrate=1&idx=${idx + 1}#${encoded}`;
+      // このページの残り処理（LIFF初期化等）は実行させたくないので、
+      // 可能であればこの後の処理をスキップする分岐を各app.js側に入れてください。
+      // 例: if (window.__migrationInProgress) return;  // メインIIFEの先頭に追加
+    } else {
+      // チェーンの最後 = 全件移行完了
+      alert("下書きデータの移行がすべて完了しました。");
+      history.replaceState(null, "", location.origin + location.pathname);
+      window.__migrationInProgress = false;
+    }
+  } catch (e) {
+    console.error("draft migration failed", e);
+    alert("下書きデータの移行中にエラーが発生しました。お手数ですが運営までご連絡ください。");
+    history.replaceState(null, "", location.origin + location.pathname);
+    window.__migrationInProgress = false;
+  }
+})();
+--------------------------------------------------------------------
+
+【重要】メイン処理側への1行追加について
+移行チェーンの途中（次のサイトへ転送するだけのページ）では、LIFFログインなど
+通常のアプリ起動処理を実行する必要がありません。念のため、各app.jsのメイン処理
+（例: "(async () => { ... 本処理 ... })();" の先頭）に下記の1行を追加することを
+推奨します。
+
+  (async () => {
+    if (window.__migrationInProgress) return;   // ← この1行を追加
+    ...（既存のLIFF初期化・アプリ本処理）...
+  })();
+
+これにより、転送専用ページとして開かれた瞬間は本来のアプリ処理を一切実行せず、
+次のサイトへの遷移だけを行うようになります（読み込みが速く、誤動作の心配もありません）。

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>データ移行 - 婚活すり合わせシリーズ</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    background: #fff5f7;
+    color: #333;
+    text-align: center;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  #msg {
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 320px;
+  }
+</style>
+</head>
+<body>
+  <div id="msg">下書きを確認しています…</div>
+
+  <script>
+    // 婚活すり合わせシリーズ 一括下書き移行ハブ
+    // このページは旧オリジン（liffdevelop31257014-gif.github.io）配下に1つだけ設置する。
+    // 同一オリジンなので、5アプリ分の下書きをここで一括取得できる。
+
+    // 移行対象一覧：[旧DRAFT_KEY, 新DRAFT_KEY, 新オリジン(末尾スラッシュ込み)]
+    const MIGRATION_LIST = [
+      {
+        label: "自己開示 Part1",
+        oldKey: "konkatsu_qa_draft",
+        newKey: "konkatsu_qa_part1_draft",
+        targetOrigin: "https://marriagesketch-jikokaijiqa1.tomorrow-sketch-52.workers.dev/"
+      },
+      {
+        label: "自己開示 Part2",
+        oldKey: "konkatsu_qa_part2_draft",
+        newKey: "konkatsu_qa_part2_draft",
+        targetOrigin: "https://marriagesketch-jikokaijiqa2.tomorrow-sketch-52.workers.dev/"
+      },
+      {
+        label: "自己開示 Part3",
+        oldKey: "konkatsu_qa_part3_draft_v2",
+        newKey: "konkatsu_qa_part3_draft",
+        targetOrigin: "https://marriagesketch-jikokaijiqa3.tomorrow-sketch-52.workers.dev/"
+      },
+      {
+        label: "婚活プロフィール",
+        oldKey: "life_story_draft_v3",
+        newKey: "konkatsu_selfintroduction_draft",
+        targetOrigin: "https://marriagesketch-selfintroduction.tomorrow-sketch-52.workers.dev/"
+      },
+      {
+        label: "価値観すり合わせ",
+        oldKey: "konkatsu_suriawase_draft_v1",
+        newKey: "konkatsu_suriawase_draft",
+        targetOrigin: "https://marriagesketch-suriawase.tomorrow-sketch-52.workers.dev/"
+      }
+    ];
+
+    function b64urlEncode(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binary = "";
+      bytes.forEach(b => binary += String.fromCharCode(b));
+      return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+    }
+
+    const msgEl = document.getElementById("msg");
+
+    try {
+      // 実際にこの端末に下書きが残っているものだけを抽出
+      const chain = MIGRATION_LIST
+        .map(item => {
+          const value = localStorage.getItem(item.oldKey);
+          if (value == null) return null;
+          return { draftKey: item.newKey, targetOrigin: item.targetOrigin, value: value };
+        })
+        .filter(Boolean);
+
+      if (chain.length === 0) {
+        msgEl.textContent = "この端末に保存された下書きは見つかりませんでした。";
+      } else {
+        msgEl.textContent = `下書きデータ（${chain.length}件）を移行しています…`;
+        const encoded = b64urlEncode(JSON.stringify(chain));
+        const firstURL = `${chain[0].targetOrigin}?migrate=1&idx=0#${encoded}`;
+        location.href = firstURL;
+      }
+    } catch (e) {
+      msgEl.textContent = "移行中にエラーが発生しました。お手数ですが運営までご連絡ください。";
+      console.error(e);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+以下５リンクの下書きを移行したいです。
+
+①自己開示 Part1
+旧リンク：https://liffdevelop31257014-gif.github.io/-jikokaiji_qa1-/
+新リンク：https://marriagesketch-jikokaijiqa1.tomorrow-sketch-52.workers.dev/
+旧DRAFT_KEY = "konkatsu_qa_draft"
+新DRAFT_KEY = "konkatsu_qa_part1_draft"
+
+②自己開示 Part2
+旧リンク：https://liffdevelop31257014-gif.github.io/-jikokaiji_qa2-/
+新リンク：https://marriagesketch-jikokaijiqa2.tomorrow-sketch-52.workers.dev/
+旧DRAFT_KEY = "konkatsu_qa_part2_draft"
+新DRAFT_KEY = "konkatsu_qa_part2_draft"
+
+③自己開示 Part3
+旧リンク：https://liffdevelop31257014-gif.github.io/-jikokaiji_qa3-/
+新リンク：https://marriagesketch-jikokaijiqa3.tomorrow-sketch-52.workers.dev/
+旧DRAFT_KEY = "konkatsu_qa_part3_draft_v2"
+新DRAFT_KEY = "konkatsu_qa_part3_draft"
+
+④婚活プロフィール
+旧リンク：https://liffdevelop31257014-gif.github.io/-selfintroduction-/
+新リンク：https://marriagesketch-selfintroduction.tomorrow-sketch-52.workers.dev/
+旧DRAFT_KEY = "life_story_draft_v3"
+新DRAFT_KEY = "konkatsu_selfintroduction_draft"
+
+⑤価値観すり合わせ
+旧リンク：https://liffdevelop31257014-gif.github.io/-suriawase-/
+新リンク：https://marriagesketch-suriawase.tomorrow-sketch-52.workers.dev/
+旧DRAFT_KEY = "konkatsu_suriawase_draft_v1"
+新DRAFT_KEY = "konkatsu_suriawase_draft"
